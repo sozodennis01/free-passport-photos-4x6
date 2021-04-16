@@ -56,9 +56,20 @@
       var fileUploaded = false;
       //If true, portrait 4x6. Else, landscape 4x6
       var orientation = false;
+      //Global Photo URL
+      var PhotoLiveURL = null;
 
       function handleFiles() {
-        //If a new fil/photo is uploaded, reset photos and canvas.
+        let fileList = this.files; /* now you can work with the file list */
+        if (fileList.length != 0 && fileList[0].type != "image/jpeg") {
+          alert("Please only upload a JPEG file.");
+          return;
+        } else if (fileList.length == 0) {
+          console.log("No file uploaded, don't run the rest of the script.");
+          return;
+        }
+
+        //If a new fil/photo is uploaded, reset photos and canvas, then release ObjectURL
         if (fileUploaded) {
           let photo = document.getElementById("uploaded_photo");
           let currentCanvas = document.getElementById("photo_canvas");
@@ -66,9 +77,11 @@
           photo.remove();
           currentCanvas.remove();
           uploadedTitle.remove();
+          //Must do memory management for object URLs. They'll be released when the user leaves the website.
+          URL.revokeObjectURL(PhotoLiveURL);
         }
-        let fileList = this.files; /* now you can work with the file list */
-        console.log("File uploaded: " + fileList.length);
+        //Only one photo can be uploaded, thus only check 1st element.
+        PhotoLiveURL = URL.createObjectURL(fileList[0]);
         showFile(fileList);
         fileUploaded = true;
       }
@@ -80,7 +93,7 @@
         document.body.appendChild(title);
 
         let photo_html = new Image();
-        photo_html.src = URL.createObjectURL(fileList[0]);
+        photo_html.src = PhotoLiveURL;
         photo_html.setAttribute("id", "uploaded_photo");
         photo_html.setAttribute("style", "display: block; margin-bottom: 1em;");
         photo_html.classList.add("responsive");
