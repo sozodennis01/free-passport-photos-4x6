@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>JS - Edit Photos</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+    <style>
+      .responsive {
+        max-width: 100%;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <!--[if lt IE 7]>
+      <p class="browsehappy">
+        You are using an <strong>outdated</strong> browser. Please
+        <a href="#">upgrade your browser</a> to improve your experience.
+      </p>
+    <![endif]-->
+    <h1>
+      Go to
+      <a href="https://tsg.phototool.state.gov/photo" target="_blank"
+        >U.S. Passport Photos - United States Department of State</a
+      >
+      to get 200px passport photo
+    </h1>
+    <h1>Upload the photo (JPEG)</h1>
+    <input type="file" id="input-photo" />
+
+    <script>
+      console.log("Script started: " + length);
+      const inputElement = document.getElementById("input-photo");
+      inputElement.addEventListener("change", handleFiles, false);
+      var fileUploaded = false;
+      //If true, portrait 4x6. Else, landscape 4x6
+      var orientation = false;
+
+      function handleFiles() {
+        let fileList = this.files; /* now you can work with the file list */
+        console.log("File uploaded: " + fileList.length);
+        showFile(fileList);
+      }
+
+      function showFile(fileList) {
+        const title = document.createElement("h1");
+        const text = document.createTextNode("Uploaded File: ");
+        title.appendChild(text);
+        document.body.appendChild(title);
+
+        let uploaded_photo = fileList[0];
+        console.log(uploaded_photo);
+        let filepath = "";
+        if (uploaded_photo.webkitRelativePath == null) {
+          filepath = "/" + uploaded_photo.name;
+        } else {
+          filepath =
+            "" + uploaded_photo.webkitRelativePath + uploaded_photo.name;
+        }
+        console.log("Filepath: " + filepath);
+        
+        let toggleOrientationBtn = document.createElement("button");
+        toggleOrientationBtn.setAttribute("id", "orientation-btn");
+        toggleOrientationBtn.onclick = toggleOrientation;
+        toggleOrientationBtn.innerHTML = "Toggle Orientation";
+        document.body.appendChild(toggleOrientationBtn);
+
+        let downloadButton = document.createElement("button");
+        downloadButton.setAttribute("id", "download_passport_photo_4x6");
+        downloadButton.onclick = downloadCanvas;
+        downloadButton.innerHTML = "Download your 4x6 Passport Photo";
+        document.body.appendChild(downloadButton);
+        
+        let photo_html = new Image();
+        photo_html.onload = function () {
+          create4x6_portrait(photo_html);
+        };
+        photo_html.src = filepath;
+        photo_html.setAttribute("id", "uploaded_photo");
+        photo_html.setAttribute("style", "display: block; margin-bottom: 1em;");
+        photo_html.classList.add("responsive");
+        document.body.appendChild(photo_html);
+
+        fileUploaded = true;
+        orientation = true;
+      }
+
+      function toggleOrientation() {
+        if (fileUploaded) {
+          let photo = document.getElementById("uploaded_photo");
+          let currentCanvas = document.getElementById("photo_canvas");
+          currentCanvas.remove();
+
+          if (orientation) {
+            create4x6_landscape(photo);
+            orientation = false;
+          } else {
+            create4x6_portrait(photo);
+            orientation = true;
+          }
+        }
+      }
+
+      function create4x6_portrait(photo_html) {
+        let canvas = document.createElement("canvas");
+        canvas.setAttribute("id", "photo_canvas");
+        canvas.setAttribute("width", photo_html.width * 2);
+        canvas.setAttribute("height", photo_html.height * 3);
+        canvas.classList.add("responsive")
+        document.body.appendChild(canvas);
+        let html_canvas = document
+          .getElementById("photo_canvas")
+          .getContext("2d");
+
+        html_canvas.drawImage(photo_html, 0, 0);
+        html_canvas.drawImage(photo_html, photo_html.clientWidth, 0);
+        html_canvas.drawImage(photo_html, 0, photo_html.clientWidth);
+        html_canvas.drawImage(
+          photo_html,
+          photo_html.clientWidth,
+          photo_html.clientWidth
+        );
+        html_canvas.drawImage(photo_html, 0, photo_html.clientWidth * 2);
+        html_canvas.drawImage(
+          photo_html,
+          photo_html.clientWidth,
+          photo_html.clientWidth * 2
+        );
+        console.log("Created portrait 4x6 photo.")
+      }
+
+      function create4x6_landscape(photo_html) {
+        let canvas = document.createElement("canvas");
+        canvas.setAttribute("id", "photo_canvas");
+        canvas.setAttribute("width", photo_html.height * 3);
+        canvas.setAttribute("height", photo_html.width * 2 );
+        canvas.classList.add("responsive")
+        document.body.appendChild(canvas);
+        let html_canvas = document
+          .getElementById("photo_canvas")
+          .getContext("2d");
+
+        html_canvas.drawImage(photo_html, 0, 0);
+        html_canvas.drawImage(photo_html, photo_html.clientWidth, 0);
+        html_canvas.drawImage(photo_html, photo_html.clientWidth * 2, 0);
+        html_canvas.drawImage(photo_html, 0, photo_html.clientWidth);
+        html_canvas.drawImage(photo_html, photo_html.clientWidth, photo_html.clientWidth);
+        html_canvas.drawImage(photo_html, photo_html.clientWidth * 2, photo_html.clientWidth);
+        console.log("Created landscape 4x6 photo.")
+      }
+
+      function downloadCanvas() {
+        let html_canvas = document.getElementById("photo_canvas");
+        let fullQuality = html_canvas.toDataURL("image/jpeg", 1.0);
+
+        let file = document.createElement("a");
+        file.href = fullQuality;
+        file.download = "4x6PassportPhoto";
+        file.click();
+      }
+    </script>
+  </body>
+</html>
