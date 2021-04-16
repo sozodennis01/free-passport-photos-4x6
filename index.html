@@ -56,15 +56,6 @@
         document.body.appendChild(title);
 
         let uploaded_photo = fileList[0];
-        console.log(uploaded_photo);
-        let filepath = "";
-        if (uploaded_photo.webkitRelativePath == null) {
-          filepath = "/" + uploaded_photo.name;
-        } else {
-          filepath =
-            "" + uploaded_photo.webkitRelativePath + uploaded_photo.name;
-        }
-        console.log("Filepath: " + filepath);
         
         let toggleOrientationBtn = document.createElement("button");
         toggleOrientationBtn.setAttribute("id", "orientation-btn");
@@ -79,13 +70,13 @@
         document.body.appendChild(downloadButton);
         
         let photo_html = new Image();
-        photo_html.onload = function () {
-          create4x6_portrait(photo_html);
-        };
-        photo_html.src = filepath;
+        photo_html.src = URL.createObjectURL(uploaded_photo);
         photo_html.setAttribute("id", "uploaded_photo");
         photo_html.setAttribute("style", "display: block; margin-bottom: 1em;");
         photo_html.classList.add("responsive");
+        photo_html.onload = function () {
+          create4x6_portrait(photo_html);
+        };
         document.body.appendChild(photo_html);
 
         fileUploaded = true;
