@@ -97,7 +97,12 @@
     inputElement.addEventListener("change", handleFiles, false);
     var fileUploaded = false;
     //If true, portrait 4x6. Else, landscape 4x6
-    var orientation = false;
+    /* https://www.w3schools.com/js/js_comments.asp
+      FUN FACT: iOS (and i assume other mobile devices) use the orientation variable name so you can't flip the 4x6 orientation in Safari. 
+      Its a read-only field... yeah i went crazy trying to debug why setting orientation = true... didn't do anything.
+      Changing this to a different name now. woohoo! 1/09/2022
+    */
+    var template_orientation = false;
     //Global Photo URL
     var PhotoLiveURL = null;
     var isSquare = false;
@@ -203,7 +208,7 @@
       };
       document.body.appendChild(photo_html);
 
-      orientation = true;
+      template_orientation = true;
       //Add line break to seperate uploaded photo and 4x6 canvas
       const seperator = document.createElement("hr");
       photo_html.setAttribute("style", "margin: 2em");
@@ -217,12 +222,12 @@
         currentCanvas.remove();
         delete currentCanvas;
 
-        if (orientation) {
+        if (template_orientation) {
           create4x6_landscape(photo);
-          orientation = false;
+          template_orientation = false;
         } else {
           create4x6_portrait(photo);
-          orientation = true;
+          template_orientation = true;
         }
       } else {
         console.error("No photo uploaded?")
