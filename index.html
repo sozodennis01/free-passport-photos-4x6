@@ -4,194 +4,282 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>Create your 4x6 Passport Photo</title>
-    <meta
-      name="description"
-      content="Convert your cropped Passport Photo into a 4x6 Photo format to cheaply print!"
-    />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="" />
-    <style>
-      .responsive {
-        max-width: 100%;
-        height: auto;
-      }
-      #input-photo {
-        margin-bottom: 2em;
-      }
-    </style>
-  </head>
-  <body>
-    <!--[if lt IE 7]>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Create your 4x6 Passport Photo</title>
+  <meta name="description" content="Convert your cropped Passport Photo into a 4x6 Photo format to cheaply print!" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="" />
+  <style>
+    body {
+      font-family: Open Sans, Arial;
+      color: #454545;
+      font-size: 16px;
+      margin: 2em auto;
+      max-width: 1080px;
+      padding: 1em;
+      line-height: 1.4;
+      text-align: left;
+      background-color: #fff;
+    }
+
+    .header-action {
+      display: flex;
+      flex-direction: row;
+      gap: 3em;
+    }
+
+    #header-image {
+      justify-content: right;
+      align-content: center;
+    }
+
+    .responsive {
+      height: auto;
+      width: auto;
+      max-width: 100%;
+    }
+
+    #input-photo {
+      margin-bottom: 2em;
+    }
+  </style>
+</head>
+
+<body>
+  <!--[if lt IE 7]>
       <p class="browsehappy">
         You are using an <strong>outdated</strong> browser. Please
         <a href="#">upgrade your browser</a> to improve your experience.
       </p>
     <![endif]-->
-    <h1>
-      Go to
-      <a href="https://tsg.phototool.state.gov/photo" target="_blank"
-        >U.S. Passport Photos - United States Department of State</a
-      >
-      to get your cropped passport photo.
-    </h1>
-    <h1>Upload your photo (JPEG)</h1>
-    <input type="file" accept="image/jpeg" id="input-photo" />
-    <div>
-      <button id="orientation-btn" onclick="toggleOrientation()">
-        Toggle Orientation
-      </button>
-      <button id="download" onclick="downloadCanvas()">
-        Download your 4x6 Passport Photo
-      </button>
+  <section style="margin-bottom: 4em;">
+    <div class="header-action">
+      <div>
+        <h1 style="font-size: 36px;">US Passport 4x6 Photo Template</h1>
+        <p>Create a 4x6 photo from your square photo!</p>
+        <strong>Upload your photo (JPEG)</strong>
+        <input type="file" accept="image/jpeg" id="input-photo" />
+        <button id="orientation-btn" onclick="toggleOrientation()">
+          Toggle Orientation
+        </button>
+        <button id="download" onclick="downloadCanvas()">
+          Download your 4x6 Passport Photo
+        </button>
+      </div>
+      <div><img id="header-image" class="responsive" src="LandingPageBenefit.png" alt="test photo"></div>
     </div>
+  </section>
 
-    <script>
-      console.log("Script started: " + length);
-      const inputElement = document.getElementById("input-photo");
-      inputElement.addEventListener("change", handleFiles, false);
-      var fileUploaded = false;
-      //If true, portrait 4x6. Else, landscape 4x6
-      var orientation = false;
-      //Global Photo URL
-      var PhotoLiveURL = null;
+  <p>Visit the <a href="https://travel.state.gov/content/travel/en/passports/how-apply/photos.html" target="_blank">US
+      Department of State Passport Photos page</a> for their photo policies.</p>
+  <p>
+    Here is a link to their photo cropping tool to get a square passport photo: </br>
+    <a href="https://tsg.phototool.state.gov/photo" target="_blank">U.S. Passport Photos - United States Department of
+      State</a>
+  </p>
+  <strong>This tool does not upload your photos to server. Everything is done on your local device.</strong>
+  <p>Source code can be found here: </br>
+    <a href="https://github.com/sozodennis01/free-passport-photos-4x6" target="_blank">Github Repo</a>
+  </p>
 
-      function handleFiles() {
-        let fileList = this.files; /* now you can work with the file list */
-        if (fileList.length != 0 && fileList[0].type != "image/jpeg") {
-          alert("Please only upload a JPEG file.");
-          return;
-        } else if (fileList.length == 0) {
-          console.log("No file uploaded, don't run the rest of the script.");
-          return;
-        }
+  <script>
+    console.log("Script started: " + length);
+    const inputElement = document.getElementById("input-photo");
+    inputElement.addEventListener("change", handleFiles, false);
+    var fileUploaded = false;
+    //If true, portrait 4x6. Else, landscape 4x6
+    var orientation = false;
+    //Global Photo URL
+    var PhotoLiveURL = null;
 
-        //If a new fil/photo is uploaded, reset photos and canvas, then release ObjectURL
-        if (fileUploaded) {
-          let photo = document.getElementById("uploaded_photo");
-          let currentCanvas = document.getElementById("photo_canvas");
-          let uploadedTitle = document.getElementById("upload-title");
-          photo.remove();
-          currentCanvas.remove();
-          uploadedTitle.remove();
-          //Must do memory management for object URLs. They'll be released when the user leaves the website.
-          URL.revokeObjectURL(PhotoLiveURL);
-        }
-        //Only one photo can be uploaded, thus only check 1st element.
-        PhotoLiveURL = URL.createObjectURL(fileList[0]);
-        showFile(fileList);
-        fileUploaded = true;
+    function handleFiles() {
+      let fileList = this.files; /* now you can work with the file list */
+      if (fileList.length != 0 && fileList[0].type != "image/jpeg") {
+        alert("You can only upload a JPEG file at this time.");
+        return;
+      } else if (fileList.length == 0) {
+        console.log("No file uploaded, don't run the rest of the script.");
+        return;
       }
 
-      function showFile(fileList) {
-        const title = document.createElement("h1");
-        title.innerHTML = "Uploaded File: ";
-        title.id = "upload-title";
-        document.body.appendChild(title);
+      //If a new file/photo is uploaded, reset photos and canvas, then release ObjectURL
+      if (fileUploaded) {
+        let uploadedTitle = document.getElementById("upload-title");
+        let photo = document.getElementById("uploaded_photo");
+        let currentCanvas = document.getElementById("photo_canvas");
 
-        let photo_html = new Image();
-        photo_html.src = PhotoLiveURL;
-        photo_html.setAttribute("id", "uploaded_photo");
-        photo_html.setAttribute("style", "display: block; margin-bottom: 1em;");
-        photo_html.classList.add("responsive");
-        photo_html.onload = function () {
-          create4x6_portrait(photo_html);
-        };
-        document.body.appendChild(photo_html);
+        uploadedTitle.remove();
+        photo.remove();
+        currentCanvas.remove();
 
-        orientation = true;
+        delete photo;
+        delete currentCanvas;
+        //Must do memory management for object URLs. They'll be released when the user leaves the website.
+        URL.revokeObjectURL(PhotoLiveURL);
       }
+      //Only one photo can be uploaded, thus only check 1st element.
+      PhotoLiveURL = URL.createObjectURL(fileList[0]);
+      let checkImg = new Image();
+      checkImg.src = PhotoLiveURL;
+      console.log(checkImg + ' ' + checkImg.src)
+      console.log(checkImg.width + ' ' + checkImg.height)
+      if (checkImg.width != checkImg.height) {
+        alert("Not a square photo.")
+        console.log("Not a square photo, need to resize.");
+        return;
+      }
+      //Resize if needed.
+      //resize(PhotoLiveURL);
 
-      function toggleOrientation() {
-        if (fileUploaded) {
-          let photo = document.getElementById("uploaded_photo");
-          let currentCanvas = document.getElementById("photo_canvas");
-          currentCanvas.remove();
+      showFile(fileList);
+      fileUploaded = true;
+    }
 
-          if (orientation) {
-            create4x6_landscape(photo);
-            orientation = false;
-          } else {
-            create4x6_portrait(photo);
-            orientation = true;
-          }
+    function resize() {
+      if (PhotoLiveURL == null) {
+        return;
+      }
+      let ctx = canvas.getContext("2d");
+      ctx.drawImage(PhotoLiveURL, 0, 0);
+      let MAX_WIDTH = 1080;
+      let MAX_HEIGHT = 1080;
+      let width = PhotoLiveURL.width;
+      let height = PhotoLiveURL.height;
+
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height *= MAX_WIDTH / width;
+          width = MAX_WIDTH;
+        }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width *= MAX_HEIGHT / height;
+          height = MAX_HEIGHT;
+        }
+      }
+      canvas.width = width;
+      canvas.height = height;
+      let ctx_temp = canvas.getContext("2d");
+      ctx_temp.drawImage(PhotoLiveURL, 0, 0, width, height);
+
+      let resize = html_canvas.toDataURL("image/jpeg", 0.8);
+    }
+
+    function showFile(fileList) {
+      const title = document.createElement("h1");
+      title.innerHTML = "Uploaded File: ";
+      title.id = "upload-title";
+      document.body.appendChild(title);
+
+      let photo_html = new Image();
+      photo_html.src = PhotoLiveURL;
+      photo_html.setAttribute("id", "uploaded_photo");
+      photo_html.setAttribute("style", "display: block; align-content: center; margin-bottom: 1em;");
+      photo_html.classList.add("responsive");
+      photo_html.onload = function () {
+        create4x6_portrait(photo_html);
+      };
+      document.body.appendChild(photo_html);
+
+      orientation = true;
+      //Add line break to seperate uploaded photo and 4x6 canvas
+      const seperator = document.createElement("hr");
+      photo_html.setAttribute("style", "margin: 2em");
+      document.body.appendChild(seperator);
+    }
+
+    function toggleOrientation() {
+      if (fileUploaded) {
+        let photo = document.getElementById("uploaded_photo");
+        let currentCanvas = document.getElementById("photo_canvas");
+        currentCanvas.remove();
+        delete currentCanvas;
+
+        if (orientation) {
+          create4x6_landscape(photo);
+          orientation = false;
         } else {
-          alert("Please upload a photo first 🤡");
+          create4x6_portrait(photo);
+          orientation = true;
         }
+      } else {
+        alert("Please upload a photo first 😅");
       }
+    }
 
-      function create4x6_portrait(photo_html) {
-        let canvas = document.createElement("canvas");
-        canvas.setAttribute("id", "photo_canvas");
-        canvas.setAttribute("width", photo_html.width * 2);
-        canvas.setAttribute("height", photo_html.height * 3);
-        canvas.classList.add("responsive");
-        document.body.appendChild(canvas);
-        let html_canvas = document
-          .getElementById("photo_canvas")
-          .getContext("2d");
+    function create4x6_portrait(photo_html) {
+      let canvas = document.createElement("canvas");
+      canvas.setAttribute("id", "photo_canvas");
+      canvas.setAttribute("width", photo_html.width * 2);
+      canvas.setAttribute("height", photo_html.height * 3);
+      canvas.classList.add("responsive");
+      document.body.appendChild(canvas);
+      let html_canvas = document
+        .getElementById("photo_canvas")
+        .getContext("2d");
 
-        html_canvas.drawImage(photo_html, 0, 0);
-        html_canvas.drawImage(photo_html, photo_html.clientWidth, 0);
-        html_canvas.drawImage(photo_html, 0, photo_html.clientWidth);
-        html_canvas.drawImage(
-          photo_html,
-          photo_html.clientWidth,
-          photo_html.clientWidth
-        );
-        html_canvas.drawImage(photo_html, 0, photo_html.clientWidth * 2);
-        html_canvas.drawImage(
-          photo_html,
-          photo_html.clientWidth,
-          photo_html.clientWidth * 2
-        );
-        console.log("Created portrait 4x6 photo.");
+      html_canvas.drawImage(photo_html, 0, 0);
+      html_canvas.drawImage(photo_html, photo_html.clientWidth, 0);
+      html_canvas.drawImage(photo_html, 0, photo_html.clientWidth);
+      html_canvas.drawImage(
+        photo_html,
+        photo_html.clientWidth,
+        photo_html.clientWidth
+      );
+      html_canvas.drawImage(photo_html, 0, photo_html.clientWidth * 2);
+      html_canvas.drawImage(
+        photo_html,
+        photo_html.clientWidth,
+        photo_html.clientWidth * 2
+      );
+      console.log("Created portrait 4x6 photo.");
+    }
+
+    function create4x6_landscape(photo_html) {
+      let canvas = document.createElement("canvas");
+      canvas.setAttribute("id", "photo_canvas");
+      canvas.setAttribute("width", photo_html.height * 3);
+      canvas.setAttribute("height", photo_html.width * 2);
+      canvas.classList.add("responsive");
+      document.body.appendChild(canvas);
+      let html_canvas = document
+        .getElementById("photo_canvas")
+        .getContext("2d");
+
+      html_canvas.drawImage(photo_html, 0, 0);
+      html_canvas.drawImage(photo_html, photo_html.clientWidth, 0);
+      html_canvas.drawImage(photo_html, photo_html.clientWidth * 2, 0);
+      html_canvas.drawImage(photo_html, 0, photo_html.clientWidth);
+      html_canvas.drawImage(
+        photo_html,
+        photo_html.clientWidth,
+        photo_html.clientWidth
+      );
+      html_canvas.drawImage(
+        photo_html,
+        photo_html.clientWidth * 2,
+        photo_html.clientWidth
+      );
+      console.log("Created landscape 4x6 photo.");
+    }
+
+    function downloadCanvas() {
+      if (fileUploaded) {
+        let html_canvas = document.getElementById("photo_canvas");
+        let export_photo = html_canvas.toDataURL("image/jpeg", 0.8);
+
+        let file = document.createElement("a");
+        file.href = export_photo;
+        file.download = "4x6PassportPhoto";
+        file.click();
+      } else {
+        alert("Please upload a photo first 😅");
       }
+    }
+  </script>
+</body>
 
-      function create4x6_landscape(photo_html) {
-        let canvas = document.createElement("canvas");
-        canvas.setAttribute("id", "photo_canvas");
-        canvas.setAttribute("width", photo_html.height * 3);
-        canvas.setAttribute("height", photo_html.width * 2);
-        canvas.classList.add("responsive");
-        document.body.appendChild(canvas);
-        let html_canvas = document
-          .getElementById("photo_canvas")
-          .getContext("2d");
-
-        html_canvas.drawImage(photo_html, 0, 0);
-        html_canvas.drawImage(photo_html, photo_html.clientWidth, 0);
-        html_canvas.drawImage(photo_html, photo_html.clientWidth * 2, 0);
-        html_canvas.drawImage(photo_html, 0, photo_html.clientWidth);
-        html_canvas.drawImage(
-          photo_html,
-          photo_html.clientWidth,
-          photo_html.clientWidth
-        );
-        html_canvas.drawImage(
-          photo_html,
-          photo_html.clientWidth * 2,
-          photo_html.clientWidth
-        );
-        console.log("Created landscape 4x6 photo.");
-      }
-
-      function downloadCanvas() {
-        if (fileUploaded) {
-          let html_canvas = document.getElementById("photo_canvas");
-          let fullQuality = html_canvas.toDataURL("image/jpeg", 1.0);
-
-          let file = document.createElement("a");
-          file.href = fullQuality;
-          file.download = "4x6PassportPhoto";
-          file.click();
-        } else {
-          alert("Please upload a photo first 🤡");
-        }
-      }
-    </script>
-  </body>
 </html>
