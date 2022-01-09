@@ -110,10 +110,12 @@
     function handleFiles() {
       let fileList = this.files; /* now you can work with the file list */
       if (fileList.length != 0 && fileList[0].type != "image/jpeg") {
+        fileUploaded = false;
         console.error("Not a JPEG file.")
         alert("You can only upload a JPEG file at this time.");
         return;
       } else if (fileList.length == 0) {
+        fileUploaded = false;
         console.error("No file uploaded, don't run the rest of the script.");
         return;
       }
@@ -141,6 +143,7 @@
       checkImg.onload = function () {
         if (checkImg.width != checkImg.height) {
           isSquare = false;
+          fileUploaded = false;
           console.error("Not a square photo, need to resize.");
           alert("Not a square photo!\nPlease use the photo cropping tool below provided by the US State Department.")
         }
