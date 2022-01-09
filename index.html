@@ -18,6 +18,7 @@
       color: #454545;
       font-size: 16px;
       margin: 2em auto;
+      min-width: 1080px;
       max-width: 1080px;
       padding: 1em;
       line-height: 1.4;
@@ -55,7 +56,7 @@
         <a href="#">upgrade your browser</a> to improve your experience.
       </p>
     <![endif]-->
-  <section style="margin-bottom: 4em;">
+  <section style="margin-bottom: 2em;">
     <div class="header-action">
       <div>
         <h1 style="font-size: 36px;">US Passport 4x6 Photo Template</h1>
@@ -72,7 +73,7 @@
       <div><img id="header-image" class="responsive" src="LandingPageBenefit.png" alt="test photo"></div>
     </div>
   </section>
-
+  <strong>This tool does not upload your photos to a server. Everything is done on your local device.</strong>
   <p>Visit the <a href="https://travel.state.gov/content/travel/en/passports/how-apply/photos.html" target="_blank">US
       Department of State Passport Photos page</a> for their photo policies.</p>
   <p>
@@ -80,10 +81,15 @@
     <a href="https://tsg.phototool.state.gov/photo" target="_blank">U.S. Passport Photos - United States Department of
       State</a>
   </p>
-  <strong>This tool does not upload your photos to server. Everything is done on your local device.</strong>
   <p>Source code can be found here: </br>
     <a href="https://github.com/sozodennis01/free-passport-photos-4x6" target="_blank">Github Repo</a>
   </p>
+
+  <aside>If this is cool, connect with me on <a href="https://www.linkedin.com/in/sozodennis">LinkedIn</a> and visit my
+    <a href="https://www.sozodennis.com">website!</br>
+    </a>
+  </aside>
+  <p>Any bugs/issues/requests, contact me on LinkedIn!</p>
 
   <script>
     console.log("Script started: " + length);
@@ -94,16 +100,19 @@
     var orientation = false;
     //Global Photo URL
     var PhotoLiveURL = null;
+    var isSquare = false;
 
     function handleFiles() {
       let fileList = this.files; /* now you can work with the file list */
       if (fileList.length != 0 && fileList[0].type != "image/jpeg") {
+        console.error("Not a JPEG file.")
         alert("You can only upload a JPEG file at this time.");
         return;
       } else if (fileList.length == 0) {
-        console.log("No file uploaded, don't run the rest of the script.");
+        console.error("No file uploaded, don't run the rest of the script.");
         return;
       }
+      console.log("File uploaded.")
 
       //If a new file/photo is uploaded, reset photos and canvas, then release ObjectURL
       if (fileUploaded) {
@@ -124,30 +133,37 @@
       PhotoLiveURL = URL.createObjectURL(fileList[0]);
       let checkImg = new Image();
       checkImg.src = PhotoLiveURL;
-      console.log(checkImg + ' ' + checkImg.src)
-      console.log(checkImg.width + ' ' + checkImg.height)
-      if (checkImg.width != checkImg.height) {
-        alert("Not a square photo.")
-        console.log("Not a square photo, need to resize.");
-        return;
-      }
-      //Resize if needed.
-      //resize(PhotoLiveURL);
-
-      showFile(fileList);
-      fileUploaded = true;
+      checkImg.onload = function () {
+        if (checkImg.width != checkImg.height) {
+          isSquare = false;
+          console.error("Not a square photo, need to resize.");
+          alert("Not a square photo!\nPlease use the photo cropping tool below provided by the US State Department.")
+        }
+        else {
+          isSquare = true;
+          //Resize if needed.
+          resize(checkImg);
+          if (isSquare) {
+            console.log("Square photo, show the file.")
+            showFile(fileList);
+            fileUploaded = true;
+          }
+        }
+      };
     }
 
-    function resize() {
-      if (PhotoLiveURL == null) {
+    function resize(resizeMe) {
+      console.log("Resizing photo...")
+      if (resizeMe == null || resizeMe.src == null) {
         return;
       }
-      let ctx = canvas.getContext("2d");
-      ctx.drawImage(PhotoLiveURL, 0, 0);
+      //Thank you https://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
+      let canvas = document.createElement("canvas");
+      // Feel free to change
       let MAX_WIDTH = 1080;
       let MAX_HEIGHT = 1080;
-      let width = PhotoLiveURL.width;
-      let height = PhotoLiveURL.height;
+      let width = resizeMe.width;
+      let height = resizeMe.height;
 
       if (width > height) {
         if (width > MAX_WIDTH) {
@@ -163,12 +179,15 @@
       canvas.width = width;
       canvas.height = height;
       let ctx_temp = canvas.getContext("2d");
-      ctx_temp.drawImage(PhotoLiveURL, 0, 0, width, height);
+      ctx_temp.drawImage(resizeMe, 0, 0, width, height);
 
-      let resize = html_canvas.toDataURL("image/jpeg", 0.8);
+      let resize = canvas.toDataURL("image/jpeg", 1.0);
+      PhotoLiveURL = resize;
     }
 
     function showFile(fileList) {
+      console.log("Showing uploaded photo")
+
       const title = document.createElement("h1");
       title.innerHTML = "Uploaded File: ";
       title.id = "upload-title";
@@ -206,11 +225,13 @@
           orientation = true;
         }
       } else {
+        console.error("No photo uploaded?")
         alert("Please upload a photo first 😅");
       }
     }
 
     function create4x6_portrait(photo_html) {
+      console.log("Creating portrait")
       let canvas = document.createElement("canvas");
       canvas.setAttribute("id", "photo_canvas");
       canvas.setAttribute("width", photo_html.width * 2);
@@ -239,6 +260,7 @@
     }
 
     function create4x6_landscape(photo_html) {
+      console.log("Creating landscape")
       let canvas = document.createElement("canvas");
       canvas.setAttribute("id", "photo_canvas");
       canvas.setAttribute("width", photo_html.height * 3);
@@ -267,6 +289,7 @@
     }
 
     function downloadCanvas() {
+      console.log("Downloading 4x6")
       if (fileUploaded) {
         let html_canvas = document.getElementById("photo_canvas");
         let export_photo = html_canvas.toDataURL("image/jpeg", 0.8);
@@ -276,6 +299,7 @@
         file.download = "4x6PassportPhoto";
         file.click();
       } else {
+        console.error("No photo uploaded?")
         alert("Please upload a photo first 😅");
       }
     }
