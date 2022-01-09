@@ -126,13 +126,15 @@
         let uploadedTitle = document.getElementById("upload-title");
         let photo = document.getElementById("uploaded_photo");
         let currentCanvas = document.getElementById("photo_canvas");
-
+        let seperator = document.getElementById("seperatorID");
         uploadedTitle.remove();
         photo.remove();
         currentCanvas.remove();
+        seperator.remove();
 
         delete photo;
         delete currentCanvas;
+        delete seperator;
         //Must do memory management for object URLs. They'll be released when the user leaves the website.
         URL.revokeObjectURL(PhotoLiveURL);
       }
@@ -214,7 +216,8 @@
       template_orientation = true;
       //Add line break to seperate uploaded photo and 4x6 canvas
       const seperator = document.createElement("hr");
-      photo_html.setAttribute("style", "margin: 2em");
+      seperator.setAttribute("id", "seperatorID");
+      seperator.setAttribute("style", "margin: 2em");
       document.body.appendChild(seperator);
     }
 
